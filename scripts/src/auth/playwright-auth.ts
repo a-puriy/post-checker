@@ -1,5 +1,5 @@
 // Playwrightを使ってDify Console認証情報を取得する
-import { chromium, type BrowserContext } from "playwright";
+import { type BrowserContext, chromium } from "playwright";
 import type { ConsoleAuth } from "../client/console.js";
 
 const AUTH_STATE_PATH = ".dify-auth-state.json";
@@ -16,9 +16,7 @@ export interface AuthOptions {
  * - 保存済みのセッションがあれば再利用
  * - なければブラウザを開いて手動ログインを待つ
  */
-export async function getAuthWithPlaywright(
-  options: AuthOptions
-): Promise<ConsoleAuth> {
+export async function getAuthWithPlaywright(options: AuthOptions): Promise<ConsoleAuth> {
   const { baseUrl, email, password, headless = false } = options;
 
   const browser = await chromium.launch({ headless });
@@ -74,10 +72,7 @@ export async function getAuthWithPlaywright(
   return auth;
 }
 
-async function extractAuth(
-  context: BrowserContext,
-  baseUrl: string
-): Promise<ConsoleAuth | null> {
+async function extractAuth(context: BrowserContext, baseUrl: string): Promise<ConsoleAuth | null> {
   const cookies = await context.cookies(baseUrl);
 
   const csrfCookie = cookies.find((c) => c.name === "csrf_token");
@@ -87,10 +82,7 @@ async function extractAuth(
 
   // access_tokenまたはセッションCookieがあるか確認
   const hasSession = cookies.some(
-    (c) =>
-      c.name === "access_token" ||
-      c.name === "session" ||
-      c.name === "remember_token"
+    (c) => c.name === "access_token" || c.name === "session" || c.name === "remember_token",
   );
 
   if (!hasSession) {
@@ -110,7 +102,7 @@ async function extractAuth(
  * 保存済みセッションをクリアする
  */
 export async function clearAuthState(): Promise<void> {
-  const fs = await import("fs/promises");
+  const fs = await import("node:fs/promises");
   try {
     await fs.unlink(AUTH_STATE_PATH);
     console.log("Auth state cleared.");

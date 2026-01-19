@@ -1,9 +1,9 @@
 #!/usr/bin/env tsx
 
 import "dotenv/config";
-import { runSync } from "./src/usecase/sync.js";
-import { exportAllDsl } from "./src/usecase/export-dsl.js";
 import { clearAuthState } from "./src/auth/playwright-auth.js";
+import { exportAllDsl } from "./src/usecase/export-dsl.js";
+import { runSync } from "./src/usecase/sync.js";
 
 interface CliConfig {
   apiUrl: string;
@@ -87,7 +87,7 @@ async function syncCommand(): Promise<void> {
   }
 
   console.log(
-    `\nSync complete: ${totalCreated} created, ${totalUpdated} updated, ${totalSkipped} unchanged, ${totalDeleted} deleted`
+    `\nSync complete: ${totalCreated} created, ${totalUpdated} updated, ${totalSkipped} unchanged, ${totalDeleted} deleted`,
   );
 
   if (totalErrors > 0) {

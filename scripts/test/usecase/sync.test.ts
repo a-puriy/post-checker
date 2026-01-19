@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdirSync, writeFileSync, rmSync, existsSync } from "fs";
-import { join } from "path";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { runSync } from "../../src/usecase/sync.js";
 
 const TEST_DIR = "/tmp/dify-sync-test";
@@ -27,7 +27,7 @@ describe("runSync unit", () => {
         baseUrl: "http://localhost",
         apiKey: "test-key",
         configPath: "/nonexistent/sync.yaml",
-      })
+      }),
     ).rejects.toThrow("Config file not found");
   });
 
@@ -39,7 +39,7 @@ describe("runSync unit", () => {
         baseUrl: "http://localhost",
         apiKey: "test-key",
         configPath: CONFIG_PATH,
-      })
+      }),
     ).rejects.toThrow("'datasets' array is required");
   });
 
@@ -50,7 +50,7 @@ describe("runSync unit", () => {
 datasets:
   - path: /nonexistent/path
     dataset_id: test-dataset
-`
+`,
     );
 
     const logs: string[] = [];
@@ -63,9 +63,7 @@ datasets:
 
     expect(results).toHaveLength(1);
     expect(results[0].path).toBe("/nonexistent/path");
-    expect(
-      logs.some((l) => l.includes("WARN") && l.includes("not found"))
-    ).toBe(true);
+    expect(logs.some((l) => l.includes("WARN") && l.includes("not found"))).toBe(true);
   });
 });
 
@@ -98,7 +96,7 @@ describe.skipIf(!INTEGRATION_TEST)("runSync integration", () => {
 datasets:
   - path: ${emptyDir}
     dataset_id: ${DIFY_TEST_DATASET_ID}
-`
+`,
     );
 
     const results = await runSync({
@@ -122,7 +120,7 @@ datasets:
 datasets:
   - path: ${testDir}
     dataset_id: ${DIFY_TEST_DATASET_ID}
-`
+`,
     );
 
     const logs: string[] = [];

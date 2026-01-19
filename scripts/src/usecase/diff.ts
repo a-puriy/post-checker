@@ -1,5 +1,5 @@
-import { createHash } from "crypto";
-import type { DiffResult, LocalFile, DifyDocument } from "../types.js";
+import { createHash } from "node:crypto";
+import type { DiffResult, DifyDocument, LocalFile } from "../types.js";
 
 export function computeHash(content: string): string {
   return createHash("sha256").update(content, "utf8").digest("hex");
@@ -7,7 +7,7 @@ export function computeHash(content: string): string {
 
 export function calculateDiff(
   localFiles: LocalFile[],
-  difyDocuments: DifyDocument[]
+  difyDocuments: DifyDocument[],
 ): DiffResult[] {
   const results: DiffResult[] = [];
 

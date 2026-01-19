@@ -1,17 +1,17 @@
 import type {
+  CreateDocumentOptions,
+  DifyCreateDocumentResponse,
   DifyDocument,
   DifyDocumentListResponse,
-  DifyCreateDocumentResponse,
   DifyUpdateDocumentResponse,
   KnowledgeClientOptions,
-  CreateDocumentOptions,
 } from "../types.js";
 
 export class KnowledgeClientError extends Error {
   constructor(
     message: string,
     public statusCode: number,
-    public responseBody?: unknown
+    public responseBody?: unknown,
   ) {
     super(message);
     this.name = "KnowledgeClientError";
@@ -31,10 +31,7 @@ export class KnowledgeClient {
     this.fetchFn = options.fetch ?? fetch;
   }
 
-  private async request<T>(
-    path: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const headers: Record<string, string> = {
       Authorization: `Bearer ${this.apiKey}`,
@@ -62,7 +59,7 @@ export class KnowledgeClient {
           const error = new KnowledgeClientError(
             `API error: ${response.status} ${response.statusText}`,
             response.status,
-            parsedBody
+            parsedBody,
           );
 
           // 5xx errors are retryable
@@ -104,7 +101,7 @@ export class KnowledgeClient {
 
   async listDocuments(
     datasetId: string,
-    options: { page?: number; limit?: number } = {}
+    options: { page?: number; limit?: number } = {},
   ): Promise<DifyDocument[]> {
     const { page = 1, limit = 100 } = options;
     const allDocuments: DifyDocument[] = [];
@@ -113,7 +110,7 @@ export class KnowledgeClient {
 
     while (hasMore) {
       const response = await this.request<DifyDocumentListResponse>(
-        `/v1/datasets/${datasetId}/documents?page=${currentPage}&limit=${limit}`
+        `/v1/datasets/${datasetId}/documents?page=${currentPage}&limit=${limit}`,
       );
 
       allDocuments.push(...response.data);
@@ -128,7 +125,7 @@ export class KnowledgeClient {
     datasetId: string,
     name: string,
     text: string,
-    options: CreateDocumentOptions = {}
+    options: CreateDocumentOptions = {},
   ): Promise<DifyDocument> {
     const body = {
       name,
@@ -142,7 +139,7 @@ export class KnowledgeClient {
       {
         method: "POST",
         body: JSON.stringify(body),
-      }
+      },
     );
 
     return response.document;
@@ -152,7 +149,7 @@ export class KnowledgeClient {
     datasetId: string,
     documentId: string,
     name: string,
-    text: string
+    text: string,
   ): Promise<DifyDocument> {
     const body = {
       name,
@@ -164,18 +161,15 @@ export class KnowledgeClient {
       {
         method: "POST",
         body: JSON.stringify(body),
-      }
+      },
     );
 
     return response.document;
   }
 
   async deleteDocument(datasetId: string, documentId: string): Promise<void> {
-    await this.request<void>(
-      `/v1/datasets/${datasetId}/documents/${documentId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    await this.request<void>(`/v1/datasets/${datasetId}/documents/${documentId}`, {
+      method: "DELETE",
+    });
   }
 }
