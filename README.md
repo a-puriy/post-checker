@@ -54,6 +54,22 @@ npm run dify:export
 npm run dify:logout
 ```
 
+## ディレクトリ構成
+
+```
+├── dify-local/       # Difyリポジトリのclone（git submodule）
+├── dify-settings/    # Difyアプリ設定のgit管理用
+│   └── dsl/          # エクスポートしたDSLファイル
+├── docs/             # 設計ドキュメント
+├── infra/            # インフラ設定
+│   └── terraform/    # Terraform設定
+├── knowledges/       # RAG用ナレッジファイル
+│   └── manifesto/    # マニフェスト等
+└── scripts/          # ユーティリティスクリプト
+    ├── src/          # スクリプト本体
+    └── test/         # テスト
+```
+
 ## Dify設定のgit管理
 
 DifyアプリのDSL（ワークフロー定義）は `dify-settings/dsl/` に保存されます。
