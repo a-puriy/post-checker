@@ -1,11 +1,8 @@
 // DSLエクスポート usecase
-import * as fs from "fs/promises";
-import * as path from "path";
-import { ConsoleClient, type ConsoleApp } from "../client/console.js";
-import {
-  getAuthWithPlaywright,
-  type AuthOptions,
-} from "../auth/playwright-auth.js";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import { getAuthWithPlaywright } from "../auth/playwright-auth.js";
+import { type ConsoleApp, ConsoleClient } from "../client/console.js";
 
 export interface ExportDslOptions {
   baseUrl: string;
@@ -28,9 +25,7 @@ export interface ExportResult {
 /**
  * 全アプリのDSLをエクスポートする
  */
-export async function exportAllDsl(
-  options: ExportDslOptions
-): Promise<ExportResult[]> {
+export async function exportAllDsl(options: ExportDslOptions): Promise<ExportResult[]> {
   const { baseUrl, outputDir, email, password, includeSecret = false, headless = false } = options;
 
   // 1. Playwright で認証情報を取得
@@ -56,7 +51,7 @@ export async function exportAllDsl(
   const results: ExportResult[] = [];
 
   for (const app of apps) {
-    const filename = sanitizeFilename(app.name) + ".yml";
+    const filename = `${sanitizeFilename(app.name)}.yml`;
     const filepath = path.join(outputDir, filename);
 
     try {

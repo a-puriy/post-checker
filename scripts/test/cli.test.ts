@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { spawn } from "child_process";
-import path from "path";
+import { spawn } from "node:child_process";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
 
 const CLI_PATH = path.resolve(__dirname, "../dify-cli.ts");
 
 function runCli(
   args: string[],
-  env: Record<string, string> = {}
+  env: Record<string, string> = {},
 ): Promise<{ stdout: string; stderr: string; exitCode: number | null }> {
   return new Promise((resolve) => {
     const proc = spawn("tsx", [CLI_PATH, ...args], {

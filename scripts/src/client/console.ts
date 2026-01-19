@@ -39,11 +39,7 @@ export class ConsoleClient {
     this.fetch = options.fetch ?? globalThis.fetch;
   }
 
-  private async request<T>(
-    method: string,
-    path: string,
-    body?: unknown
-  ): Promise<T> {
+  private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const headers: Record<string, string> = {
       Cookie: this.auth.cookies,
@@ -71,7 +67,7 @@ export class ConsoleClient {
   async listApps(page = 1, limit = 100): Promise<ConsoleAppsResponse> {
     return this.request<ConsoleAppsResponse>(
       "GET",
-      `/console/api/apps?page=${page}&limit=${limit}`
+      `/console/api/apps?page=${page}&limit=${limit}`,
     );
   }
 

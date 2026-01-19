@@ -1,8 +1,8 @@
-import { readFileSync, readdirSync, existsSync } from "fs";
-import { join } from "path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { parse as parseYaml } from "yaml";
-import type { SyncConfig, SyncResult, LocalFile, DiffAction } from "../types.js";
 import { KnowledgeClient } from "../client/knowledge.js";
+import type { DiffAction, LocalFile, SyncConfig, SyncResult } from "../types.js";
 import { calculateDiff, computeHash } from "./diff.js";
 
 const BATCH_SIZE = 10;
@@ -56,7 +56,7 @@ export async function runSync(options: RunSyncOptions): Promise<SyncResult[]> {
     const localFiles = getLocalFiles(dataset.path);
 
     // Difyドキュメント取得
-    let difyDocuments;
+    let difyDocuments: Awaited<ReturnType<typeof client.listDocuments>>;
     try {
       difyDocuments = await client.listDocuments(dataset.dataset_id);
     } catch (error) {
@@ -90,7 +90,7 @@ export async function runSync(options: RunSyncOptions): Promise<SyncResult[]> {
     for (const diff of deletes) {
       try {
         log(`  [DELETE] ${diff.filename}`);
-        await client.deleteDocument(dataset.dataset_id, diff.documentId!);
+        await client.deleteDocument(dataset.dataset_id, diff.documentId as string);
         result.deleted++;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -111,7 +111,8 @@ export async function runSync(options: RunSyncOptions): Promise<SyncResult[]> {
 
       for (const diff of batch) {
         try {
-          const localFile = localFiles.find((f) => f.filename === diff.filename)!;
+          const localFile = localFiles.find((f) => f.filename === diff.filename);
+          if (!localFile) continue;
           log(`  [CREATE] ${diff.filename}`);
           const doc = await client.createDocument(
             dataset.dataset_id,
@@ -120,7 +121,7 @@ export async function runSync(options: RunSyncOptions): Promise<SyncResult[]> {
             {
               indexing_technique: dataset.indexing_technique,
               process_rule: dataset.process_rule,
-            }
+            },
           );
           batchDocIds.push(doc.id);
           createdDocIds.push(doc.id);
@@ -150,13 +151,14 @@ export async function runSync(options: RunSyncOptions): Promise<SyncResult[]> {
 
       for (const diff of batch) {
         try {
-          const localFile = localFiles.find((f) => f.filename === diff.filename)!;
+          const localFile = localFiles.find((f) => f.filename === diff.filename);
+          if (!localFile) continue;
           log(`  [UPDATE] ${diff.filename} (${diff.reason})`);
           const doc = await client.updateDocument(
             dataset.dataset_id,
-            diff.documentId!,
+            diff.documentId as string,
             diff.filename,
-            localFile.content
+            localFile.content,
           );
           batchDocIds.push(doc.id);
           result.updated++;
@@ -188,7 +190,7 @@ async function waitForIndexing(
   client: KnowledgeClient,
   datasetId: string,
   docIds: string[],
-  log: (msg: string) => void
+  log: (msg: string) => void,
 ): Promise<void> {
   const start = Date.now();
   const pending = new Set(docIds);

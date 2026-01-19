@@ -1,8 +1,5 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import {
-  KnowledgeClient,
-  KnowledgeClientError,
-} from "../../src/client/knowledge.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { KnowledgeClient, KnowledgeClientError } from "../../src/client/knowledge.js";
 
 // Unit tests (with mocked fetch)
 describe("KnowledgeClient unit", () => {
@@ -35,7 +32,7 @@ describe("KnowledgeClient unit", () => {
         headers: expect.objectContaining({
           Authorization: "Bearer test-key",
         }),
-      })
+      }),
     );
   });
 
@@ -102,7 +99,7 @@ describe("KnowledgeClient unit", () => {
       expect.objectContaining({
         method: "POST",
         body: expect.stringContaining("test.md"),
-      })
+      }),
     );
   });
 
@@ -120,9 +117,7 @@ describe("KnowledgeClient unit", () => {
       fetch: mockFetch as typeof fetch,
     });
 
-    await expect(client.listDocuments("dataset-123")).rejects.toThrow(
-      KnowledgeClientError
-    );
+    await expect(client.listDocuments("dataset-123")).rejects.toThrow(KnowledgeClientError);
   });
 
   it("deleteDocument - 正常系", async () => {
@@ -144,7 +139,7 @@ describe("KnowledgeClient unit", () => {
       "http://localhost/v1/datasets/dataset-123/documents/doc-456",
       expect.objectContaining({
         method: "DELETE",
-      })
+      }),
     );
   });
 });
@@ -194,11 +189,7 @@ describe.skipIf(!INTEGRATION_TEST)("KnowledgeClient integration", () => {
 
   it("createDocument - ドキュメントを作成できる", async () => {
     const name = `test-${Date.now()}.md`;
-    const doc = await client.createDocument(
-      DIFY_TEST_DATASET_ID,
-      name,
-      "テスト内容です"
-    );
+    const doc = await client.createDocument(DIFY_TEST_DATASET_ID, name, "テスト内容です");
 
     createdDocIds.push(doc.id);
 
@@ -209,11 +200,7 @@ describe.skipIf(!INTEGRATION_TEST)("KnowledgeClient integration", () => {
   it("create → list → delete の一連のフロー", async () => {
     const name = `test-flow-${Date.now()}.md`;
 
-    const doc = await client.createDocument(
-      DIFY_TEST_DATASET_ID,
-      name,
-      "フローテスト"
-    );
+    const doc = await client.createDocument(DIFY_TEST_DATASET_ID, name, "フローテスト");
     createdDocIds.push(doc.id);
 
     const listAfterCreate = await client.listDocuments(DIFY_TEST_DATASET_ID);
@@ -226,28 +213,15 @@ describe.skipIf(!INTEGRATION_TEST)("KnowledgeClient integration", () => {
     expect(listAfterDelete.some((d) => d.id === doc.id)).toBe(false);
   });
 
-  it(
-    "updateDocument - ドキュメントを更新できる",
-    { timeout: 60000 },
-    async () => {
-      const name = `test-update-${Date.now()}.md`;
+  it("updateDocument - ドキュメントを更新できる", { timeout: 60000 }, async () => {
+    const name = `test-update-${Date.now()}.md`;
 
-      const doc = await client.createDocument(
-        DIFY_TEST_DATASET_ID,
-        name,
-        "更新前"
-      );
-      createdDocIds.push(doc.id);
+    const doc = await client.createDocument(DIFY_TEST_DATASET_ID, name, "更新前");
+    createdDocIds.push(doc.id);
 
-      await waitForIndexing(doc.id);
+    await waitForIndexing(doc.id);
 
-      const updated = await client.updateDocument(
-        DIFY_TEST_DATASET_ID,
-        doc.id,
-        name,
-        "更新後"
-      );
-      expect(updated.id).toBe(doc.id);
-    }
-  );
+    const updated = await client.updateDocument(DIFY_TEST_DATASET_ID, doc.id, name, "更新後");
+    expect(updated.id).toBe(doc.id);
+  });
 });
