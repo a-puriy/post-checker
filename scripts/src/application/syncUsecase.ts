@@ -69,6 +69,7 @@ export async function runSync(options: RunSyncOptions): Promise<SyncResultData[]
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       log(`  [ERROR] Failed to list documents: ${message}`);
+      // Note: Using "skip" as a placeholder for system-level errors
       result.addError("", "skip" as DiffAction, `Failed to list documents: ${message}`);
       results.push(result.toPlainObject());
       continue;
