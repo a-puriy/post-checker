@@ -78,6 +78,13 @@ resource "google_cloud_run_v2_service" "api" {
       }
 
       env {
+        name  = "MIGRATION_ENABLED"
+        value = "true"
+      }
+
+      # Note: URL values left empty - Dify auto-detects from request headers
+      # CORS is set to allow all origins for Cloud Run multi-service setup
+      env {
         name  = "CONSOLE_WEB_URL"
         value = ""
       }
@@ -103,6 +110,16 @@ resource "google_cloud_run_v2_service" "api" {
       }
 
       env {
+        name  = "CONSOLE_CORS_ALLOW_ORIGINS"
+        value = "*"
+      }
+
+      env {
+        name  = "WEB_API_CORS_ALLOW_ORIGINS"
+        value = "*"
+      }
+
+      env {
         name = "SECRET_KEY"
         value_source {
           secret_key_ref {
@@ -112,15 +129,16 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
 
-      env {
-        name = "INIT_PASSWORD"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.init_password.secret_id
-            version = "latest"
-          }
-        }
-      }
+      # INIT_PASSWORD removed - not needed after initial setup
+      # env {
+      #   name = "INIT_PASSWORD"
+      #   value_source {
+      #     secret_key_ref {
+      #       secret  = google_secret_manager_secret.init_password.secret_id
+      #       version = "latest"
+      #     }
+      #   }
+      # }
 
       env {
         name  = "DB_USERNAME"
@@ -229,160 +247,11 @@ resource "google_cloud_run_v2_service" "api" {
   ]
 }
 
-# Dify Worker Service
-resource "google_cloud_run_v2_service" "worker" {
-  name     = "${local.name_prefix}-worker-${local.name_suffix}"
-  location = var.region
-  project  = var.project_id
-
-  template {
-    service_account = google_service_account.dify.email
-
-    scaling {
-      min_instance_count = var.cloud_run_min_instances
-      max_instance_count = var.cloud_run_max_instances
-    }
-
-    vpc_access {
-      connector = google_vpc_access_connector.connector.id
-      egress    = "ALL_TRAFFIC"
-    }
-
-    containers {
-      image = "langgenius/dify-api:${var.dify_version}"
-
-      resources {
-        limits = {
-          cpu    = var.cloud_run_cpu
-          memory = var.cloud_run_memory
-        }
-      }
-
-      env {
-        name  = "MODE"
-        value = "worker"
-      }
-
-      env {
-        name  = "LOG_LEVEL"
-        value = "INFO"
-      }
-
-      env {
-        name = "SECRET_KEY"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.secret_key.secret_id
-            version = "latest"
-          }
-        }
-      }
-
-      env {
-        name  = "DB_USERNAME"
-        value = var.db_user
-      }
-
-      env {
-        name = "DB_PASSWORD"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.db_password.secret_id
-            version = "latest"
-          }
-        }
-      }
-
-      env {
-        name  = "DB_HOST"
-        value = google_sql_database_instance.main.private_ip_address
-      }
-
-      env {
-        name  = "DB_PORT"
-        value = "5432"
-      }
-
-      env {
-        name  = "DB_DATABASE"
-        value = var.db_name
-      }
-
-      env {
-        name  = "REDIS_HOST"
-        value = google_redis_instance.main.host
-      }
-
-      env {
-        name  = "REDIS_PORT"
-        value = tostring(google_redis_instance.main.port)
-      }
-
-      env {
-        name  = "REDIS_DB"
-        value = "0"
-      }
-
-      env {
-        name  = "CELERY_BROKER_URL"
-        value = "redis://${google_redis_instance.main.host}:${google_redis_instance.main.port}/1"
-      }
-
-      env {
-        name  = "STORAGE_TYPE"
-        value = "local"
-      }
-
-      env {
-        name  = "STORAGE_LOCAL_PATH"
-        value = "/app/api/storage"
-      }
-
-      env {
-        name  = "VECTOR_STORE"
-        value = "pgvector"
-      }
-
-      env {
-        name  = "PGVECTOR_HOST"
-        value = google_sql_database_instance.main.private_ip_address
-      }
-
-      env {
-        name  = "PGVECTOR_PORT"
-        value = "5432"
-      }
-
-      env {
-        name  = "PGVECTOR_USER"
-        value = var.db_user
-      }
-
-      env {
-        name = "PGVECTOR_PASSWORD"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.db_password.secret_id
-            version = "latest"
-          }
-        }
-      }
-
-      env {
-        name  = "PGVECTOR_DATABASE"
-        value = var.db_name
-      }
-    }
-  }
-
-  depends_on = [
-    google_secret_manager_secret_iam_member.db_password_access,
-    google_secret_manager_secret_iam_member.secret_key_access,
-    google_project_iam_member.cloudsql_client,
-    google_sql_database.dify,
-    google_sql_user.dify,
-  ]
-}
+# Dify Worker Service - DISABLED (Cloud Run doesn't support non-HTTP workers well)
+# Consider using Cloud Run Worker Pools or GCE for Celery workers in the future
+# resource "google_cloud_run_v2_service" "worker" {
+#   ... (disabled)
+# }
 
 # Dify Web Service
 resource "google_cloud_run_v2_service" "web" {
@@ -419,15 +288,19 @@ resource "google_cloud_run_v2_service" "web" {
 
       env {
         name  = "CONSOLE_API_URL"
-        value = ""
+        value = google_cloud_run_v2_service.api.uri
       }
 
       env {
         name  = "APP_API_URL"
-        value = ""
+        value = google_cloud_run_v2_service.api.uri
       }
     }
   }
+
+  depends_on = [
+    google_cloud_run_v2_service.api,
+  ]
 }
 
 # Allow unauthenticated access to web service

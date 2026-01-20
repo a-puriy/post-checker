@@ -8,10 +8,10 @@ output "api_url" {
   value       = google_cloud_run_v2_service.api.uri
 }
 
-output "worker_url" {
-  description = "Dify Worker URL"
-  value       = google_cloud_run_v2_service.worker.uri
-}
+# output "worker_url" {
+#   description = "Dify Worker URL"
+#   value       = google_cloud_run_v2_service.worker.uri
+# }
 
 output "database_instance_name" {
   description = "Cloud SQL instance name"
