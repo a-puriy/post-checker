@@ -8,14 +8,14 @@ const { mockGetAllApps, mockImportDsl, mockUpdateAppDsl } = vi.hoisted(() => ({
   mockUpdateAppDsl: vi.fn(),
 }));
 
-vi.mock("../../src/auth/playwright-auth.js", () => ({
+vi.mock("../../../src/auth/playwright-auth.js", () => ({
   getAuthWithPlaywright: vi.fn().mockResolvedValue({
     cookies: "test-cookie",
     csrfToken: "test-csrf",
   }),
 }));
 
-vi.mock("../../src/client/console.js", () => {
+vi.mock("../../../src/client/console.js", () => {
   return {
     ConsoleClient: class {
       getAllApps = mockGetAllApps;
@@ -25,7 +25,7 @@ vi.mock("../../src/client/console.js", () => {
   };
 });
 
-import { importAllDsl } from "../../src/usecase/import-dsl.js";
+import { importAllDsl } from "../../../src/usecase/import-dsl.js";
 
 const TEST_DIR = "/tmp/test-import-dsl";
 
