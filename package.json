@@ -15,18 +15,19 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "INTEGRATION_TEST=true vitest run",
-    "format": "biome format --write .",
+    "format": "biome check --write . && prettier --write 'dify-settings/**/*.yml'",
     "lint": "biome lint .",
     "check": "biome check --write .",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx biome check --staged --no-errors-on-unmatched --write"
+    "pre-commit": "npm run format"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "@types/node": "^25.0.9",
     "dotenv": "^17.2.3",
+    "prettier": "^3.8.0",
     "simple-git-hooks": "^2.13.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0",

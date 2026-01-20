@@ -1,1 +1,228 @@
-{"data":"app:\n  description: ''\n  icon: \ud83e\udd16\n  icon_background: '#FFEAD5'\n  mode: advanced-chat\n  name: PostChecker\n  use_icon_as_answer_icon: false\ndependencies:\n- current_identifier: null\n  type: marketplace\n  value:\n    marketplace_plugin_unique_identifier: langgenius\/openai:0.2.8@aae2be0913b8c6f0b80cff58e08d7a8b4c214569b41778413fcaea204561ff16\n    version: null\nkind: app\nversion: 0.5.0\nworkflow:\n  conversation_variables: []\n  environment_variables: []\n  features:\n    file_upload:\n      allowed_file_extensions:\n      - .JPG\n      - .JPEG\n      - .PNG\n      - .GIF\n      - .WEBP\n      - .SVG\n      allowed_file_types:\n      - image\n      allowed_file_upload_methods:\n      - local_file\n      - remote_url\n      enabled: false\n      fileUploadConfig:\n        attachment_image_file_size_limit: 2\n        audio_file_size_limit: 50\n        batch_count_limit: 5\n        file_size_limit: 15\n        file_upload_limit: 20\n        image_file_batch_limit: 10\n        image_file_size_limit: 10\n        single_chunk_attachment_limit: 10\n        video_file_size_limit: 100\n        workflow_file_upload_limit: 10\n      image:\n        enabled: false\n        number_limits: 3\n        transfer_methods:\n        - local_file\n        - remote_url\n      number_limits: 3\n    opening_statement: ''\n    retriever_resource:\n      enabled: false\n    sensitive_word_avoidance:\n      enabled: false\n    speech_to_text:\n      enabled: false\n    suggested_questions: []\n    suggested_questions_after_answer:\n      enabled: false\n    text_to_speech:\n      enabled: false\n      language: ''\n      voice: ''\n  graph:\n    edges:\n    - data:\n        sourceType: start\n        targetType: knowledge-retrieval\n      id: 1711528914102-1711528915811\n      source: '1711528914102'\n      sourceHandle: source\n      target: '1711528915811'\n      targetHandle: target\n      type: custom\n    - data:\n        sourceType: knowledge-retrieval\n        targetType: llm\n      id: 1711528915811-1711528917469\n      source: '1711528915811'\n      sourceHandle: source\n      target: '1711528917469'\n      targetHandle: target\n      type: custom\n    - data:\n        sourceType: llm\n        targetType: answer\n      id: 1711528917469-1711528919501\n      source: '1711528917469'\n      sourceHandle: source\n      target: '1711528919501'\n      targetHandle: target\n      type: custom\n    nodes:\n    - data:\n        desc: ''\n        selected: false\n        title: Start\n        type: start\n        variables: []\n      height: 73\n      id: '1711528914102'\n      position:\n        x: 79.5\n        y: 2634.5\n      positionAbsolute:\n        x: 79.5\n        y: 2634.5\n      selected: false\n      sourcePosition: right\n      targetPosition: left\n      type: custom\n      width: 242\n    - data:\n        dataset_ids:\n        - P9BenPtuC1vfag+nJM6R+w1zFZ+mLapQ8zeCfNPUf6fCQfiGxq\/XjOBdg7ZR9LdM\n        desc: Allows you to query text content related to user questions from the\n          Knowledge\n        query_variable_selector:\n        - '1711528914102'\n        - sys.query\n        retrieval_mode: single\n        selected: false\n        single_retrieval_config:\n          model:\n            completion_params:\n              frequency_penalty: 0\n              max_tokens: 512\n              presence_penalty: 0\n              temperature: 0\n              top_p: 1\n            mode: chat\n            name: gpt-3.5-turbo\n            provider: openai\n        title: Knowledge Retrieval\n        type: knowledge-retrieval\n      dragging: false\n      height: 112\n      id: '1711528915811'\n      position:\n        x: 362.5\n        y: 2634.5\n      positionAbsolute:\n        x: 362.5\n        y: 2634.5\n      selected: false\n      sourcePosition: right\n      targetPosition: left\n      type: custom\n      width: 242\n    - data:\n        context:\n          enabled: false\n          variable_selector: []\n        desc: Invoking large language models to answer questions or process natural\n          language\n        memory:\n          role_prefix:\n            assistant: ''\n            user: ''\n          window:\n            enabled: false\n            size: 50\n        model:\n          completion_params:\n            frequency_penalty: 0\n            max_tokens: 512\n            presence_penalty: 0\n            temperature: 0.7\n            top_p: 1\n          mode: chat\n          name: gpt-3.5-turbo\n          provider: langgenius\/openai\/openai\n        prompt_template:\n        - id: e4455dd3-494b-4b72-84a4-c714d87c17a6\n          role: system\n          text: \"You are a helpful assistant. \\nUse the following context as your\\\n            \\ learned knowledge, inside <context><\/context> XML tags.\\n<context>\\n\\\n            {{#context#}}\\n<\/context>\\nWhen answer to user:\\n- If you don't know,\\\n            \\ just say that you don't know.\\n- If you don't know when you are not\\\n            \\ sure, ask for clarification.\\nAvoid mentioning that you obtained the\\\n            \\ information from the context.\\nAnd answer according to the language\\\n            \\ of the user's question.\"\n        selected: true\n        title: LLM\n        type: llm\n        variables: []\n        vision:\n          enabled: false\n      height: 148\n      id: '1711528917469'\n      position:\n        x: 645.5\n        y: 2634.5\n      positionAbsolute:\n        x: 645.5\n        y: 2634.5\n      selected: true\n      sourcePosition: right\n      targetPosition: left\n      type: custom\n      width: 242\n    - data:\n        answer: '{{#1711528917469.text#}}'\n        desc: ''\n        selected: false\n        title: Answer\n        type: answer\n        variables: []\n      height: 103\n      id: '1711528919501'\n      position:\n        x: 928.5\n        y: 2634.5\n      positionAbsolute:\n        x: 928.5\n        y: 2634.5\n      selected: false\n      sourcePosition: right\n      targetPosition: left\n      type: custom\n      width: 242\n    viewport:\n      x: 299.91563435138517\n      y: -2095.69386924012\n      zoom: 0.9753554615276419\n  rag_pipeline_variables: []\n"}
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: PostChecker
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai:0.2.8@aae2be0913b8c6f0b80cff58e08d7a8b4c214569b41778413fcaea204561ff16
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: 1711528914102-1711528915811
+      source: '1711528914102'
+      sourceHandle: source
+      target: '1711528915811'
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1711528915811-1711528917469
+      source: '1711528915811'
+      sourceHandle: source
+      target: '1711528917469'
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: answer
+      id: 1711528917469-1711528919501
+      source: '1711528917469'
+      sourceHandle: source
+      target: '1711528919501'
+      targetHandle: target
+      type: custom
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: Start
+        type: start
+        variables: []
+      height: 73
+      id: '1711528914102'
+      position:
+        x: 79.5
+        y: 2634.5
+      positionAbsolute:
+        x: 79.5
+        y: 2634.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        dataset_ids:
+        - P9BenPtuC1vfag+nJM6R+w1zFZ+mLapQ8zeCfNPUf6fCQfiGxq/XjOBdg7ZR9LdM
+        desc: Allows you to query text content related to user questions from the
+          Knowledge
+        query_variable_selector:
+        - '1711528914102'
+        - sys.query
+        retrieval_mode: single
+        selected: false
+        single_retrieval_config:
+          model:
+            completion_params:
+              frequency_penalty: 0
+              max_tokens: 512
+              presence_penalty: 0
+              temperature: 0
+              top_p: 1
+            mode: chat
+            name: gpt-3.5-turbo
+            provider: openai
+        title: Knowledge Retrieval
+        type: knowledge-retrieval
+      dragging: false
+      height: 112
+      id: '1711528915811'
+      position:
+        x: 362.5
+        y: 2634.5
+      positionAbsolute:
+        x: 362.5
+        y: 2634.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: Invoking large language models to answer questions or process natural
+          language
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            frequency_penalty: 0
+            max_tokens: 512
+            presence_penalty: 0
+            temperature: 0.7
+            top_p: 1
+          mode: chat
+          name: gpt-3.5-turbo
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: e4455dd3-494b-4b72-84a4-c714d87c17a6
+          role: system
+          text: "You are a helpful assistant. \nUse the following context as your\
+            \ learned knowledge, inside <context></context> XML tags.\n<context>\n\
+            {{#context#}}\n</context>\nWhen answer to user:\n- If you don't know,\
+            \ just say that you don't know.\n- If you don't know when you are not\
+            \ sure, ask for clarification.\nAvoid mentioning that you obtained the\
+            \ information from the context.\nAnd answer according to the language\
+            \ of the user's question."
+        selected: true
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 148
+      id: '1711528917469'
+      position:
+        x: 645.5
+        y: 2634.5
+      positionAbsolute:
+        x: 645.5
+        y: 2634.5
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1711528917469.text#}}'
+        desc: ''
+        selected: false
+        title: Answer
+        type: answer
+        variables: []
+      height: 103
+      id: '1711528919501'
+      position:
+        x: 928.5
+        y: 2634.5
+      positionAbsolute:
+        x: 928.5
+        y: 2634.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 299.91563435138517
+      y: -2095.69386924012
+      zoom: 0.9753554615276419
+  rag_pipeline_variables: []
