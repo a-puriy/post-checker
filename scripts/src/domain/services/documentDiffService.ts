@@ -1,5 +1,5 @@
-import { DifyDocument } from "../models/difyDocument.js";
-import { LocalDocument } from "../models/localDocument.js";
+import type { DifyDocument } from "../models/difyDocument.js";
+import type { LocalDocument } from "../models/localDocument.js";
 
 /**
  * 差分アクションの種類
@@ -85,43 +85,4 @@ export class DocumentDiffService {
 
     return results;
   }
-}
-
-/**
- * 後方互換性のためのスタンドアロン関数
- * 旧 types.ts の LocalFile / DifyDocument 型を受け付ける
- */
-export function calculateDiff(
-  localFiles: Array<{ filename: string; path: string; content: string; hash: string }>,
-  difyDocuments: Array<{
-    id: string;
-    name: string;
-    doc_metadata?: { source_hash?: string };
-    indexing_status?: string;
-    error?: string | null;
-  }>,
-): DiffResult[] {
-  // 旧型からドメインモデルに変換
-  const localDocuments = localFiles.map((f) => LocalDocument.create(f.filename, f.path, f.content));
-
-  const difyDocs = difyDocuments.map(
-    (d) =>
-      new DifyDocument(
-        d.id,
-        d.name,
-        d.indexing_status ?? "completed",
-        d.error ?? null,
-        d.doc_metadata?.source_hash,
-      ),
-  );
-
-  const service = new DocumentDiffService();
-  return service.calculateDiff(localDocuments, difyDocs);
-}
-
-/**
- * 後方互換性のためのハッシュ計算関数
- */
-export function computeHash(content: string): string {
-  return LocalDocument.computeHash(content);
 }

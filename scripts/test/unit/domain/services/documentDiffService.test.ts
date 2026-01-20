@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DifyDocument } from "../../../../src/domain/models/difyDocument.js";
 import { LocalDocument } from "../../../../src/domain/models/localDocument.js";
-import {
-  calculateDiff,
-  computeHash,
-  DocumentDiffService,
-} from "../../../../src/domain/services/documentDiffService.js";
+import { DocumentDiffService } from "../../../../src/domain/services/documentDiffService.js";
 
 function makeLocalDocument(filename: string, content: string = "content"): LocalDocument {
   return LocalDocument.create(filename, `/path/to/${filename}`, content);
@@ -47,7 +43,7 @@ describe("DocumentDiffService", () => {
 
   it("ハッシュ一致 → SKIP", () => {
     const content = "same content";
-    const hash = computeHash(content);
+    const hash = LocalDocument.computeHash(content);
     const localDocuments = [makeLocalDocument("same.md", content)];
     const difyDocuments = [makeDifyDocument("same.md", hash)];
 
@@ -62,7 +58,9 @@ describe("DocumentDiffService", () => {
 
   it("ハッシュ不一致 → UPDATE", () => {
     const localDocuments = [makeLocalDocument("changed.md", "new content")];
-    const difyDocuments = [makeDifyDocument("changed.md", computeHash("old content"))];
+    const difyDocuments = [
+      makeDifyDocument("changed.md", LocalDocument.computeHash("old content")),
+    ];
 
     const results = service.calculateDiff(localDocuments, difyDocuments);
 
@@ -90,7 +88,7 @@ describe("DocumentDiffService", () => {
 
   it("複合ケース: CREATE/UPDATE/DELETE/SKIP混在", () => {
     const content = "unchanged";
-    const hash = computeHash(content);
+    const hash = LocalDocument.computeHash(content);
 
     const localDocuments = [
       makeLocalDocument("new.md", "new"),
@@ -99,7 +97,7 @@ describe("DocumentDiffService", () => {
     ];
 
     const difyDocuments = [
-      makeDifyDocument("changed.md", computeHash("original")),
+      makeDifyDocument("changed.md", LocalDocument.computeHash("original")),
       makeDifyDocument("same.md", hash),
       makeDifyDocument("deleted.md", "some-hash"),
     ];
@@ -137,66 +135,16 @@ describe("DocumentDiffService", () => {
   });
 });
 
-// 後方互換性のためのレガシー関数テスト
-describe("calculateDiff (legacy function)", () => {
-  function makeLocalFile(filename: string, content: string = "content") {
-    return {
-      filename,
-      path: `/path/to/${filename}`,
-      content,
-      hash: computeHash(content),
-    };
-  }
-
-  function makeDifyDoc(name: string, hash?: string) {
-    return {
-      id: `doc-${name}`,
-      name,
-      indexing_status: "completed",
-      error: null,
-      doc_metadata: hash ? { source_hash: hash } : undefined,
-    };
-  }
-
-  it("新規ファイル → CREATE", () => {
-    const localFiles = [makeLocalFile("new.md")];
-    const difyDocs: ReturnType<typeof makeDifyDoc>[] = [];
-
-    const results = calculateDiff(localFiles, difyDocs);
-
-    expect(results).toHaveLength(1);
-    expect(results[0]).toMatchObject({
-      action: "create",
-      filename: "new.md",
-    });
-  });
-
-  it("ハッシュ一致 → SKIP", () => {
-    const content = "same content";
-    const hash = computeHash(content);
-    const localFiles = [makeLocalFile("same.md", content)];
-    const difyDocs = [makeDifyDoc("same.md", hash)];
-
-    const results = calculateDiff(localFiles, difyDocs);
-
-    expect(results).toHaveLength(1);
-    expect(results[0]).toMatchObject({
-      action: "skip",
-      filename: "same.md",
-    });
-  });
-});
-
-describe("computeHash", () => {
+describe("LocalDocument.computeHash", () => {
   it("同じ内容は同じハッシュ", () => {
-    expect(computeHash("hello")).toBe(computeHash("hello"));
+    expect(LocalDocument.computeHash("hello")).toBe(LocalDocument.computeHash("hello"));
   });
 
   it("異なる内容は異なるハッシュ", () => {
-    expect(computeHash("hello")).not.toBe(computeHash("world"));
+    expect(LocalDocument.computeHash("hello")).not.toBe(LocalDocument.computeHash("world"));
   });
 
   it("SHA-256形式 (64文字)", () => {
-    expect(computeHash("test")).toMatch(/^[a-f0-9]{64}$/);
+    expect(LocalDocument.computeHash("test")).toMatch(/^[a-f0-9]{64}$/);
   });
 });
