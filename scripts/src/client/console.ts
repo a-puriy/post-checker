@@ -101,6 +101,8 @@ export class ConsoleClient {
       throw new Error(`Export DSL error ${response.status}: ${text}`);
     }
 
-    return response.text();
+    // Dify API returns JSON with { data: "yaml string" }
+    const json = (await response.json()) as { data: string };
+    return json.data;
   }
 }
