@@ -22,9 +22,7 @@
       "*.json"
     ],
     "ignoreUnknown": true,
-    "experimentalScannerIgnores": [
-      "dify-local/**"
-    ]
+    "experimentalScannerIgnores": ["dify-local/**"]
   },
   "assist": {
     "actions": {
