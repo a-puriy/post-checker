@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: ja-JP
+
+# ナレッジベース: プロジェクト固有のアーキテクチャガイドとルール
+knowledge_base:
+  code_guidelines:
+    filePatterns:
+      - "docs/architecture.md"
+      - "claude.md"
+
+reviews:
+  request_changes_workflow: true
+  poem: false
+  collapse_walkthrough: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+
+  # レビュースタイル
+  profile: assertive
+
+  # レビュー強化機能
+  auto_apply_labels: true
+
+  path_filters:
+    # コードをレビュー対象に
+    - "scripts/**"
+    - "infra/**"
+    - "dify-settings/**"
+    # docsをレビュー対象に
+    - "docs/**"
+    # knowledgesの変更はスキップ
+    - "!knowledges/**"
+    # 画像・ロックファイル等は除外
+    - "!**/*.svg"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.jpeg"
+    - "!**/*.gif"
+    - "!**/*.lock"
+    - "!**/package-lock.json"
+    - "!**/dist/**"
+    - "!**/coverage/**"
+    - "!**/*.snap"
+
+  # パス別のレビュー指示
+  path_instructions:
+    - path: "scripts/**"
+      instructions: "claude.md と docs/architecture.md に従ってレビューしてください。"
+
+    - path: "docs/**/*.md"
+      instructions: |
+        これは設計ドキュメントです。以下の観点でアーキテクチャレビューを行ってください：
+
+        1. **アーキテクチャ整合性**: docs/architecture.md の設計方針に従っているか
+        2. **実装の実現可能性**: 設計が現実的に実装可能か、技術的な問題がないか
+        3. **既存コードとの整合性**: プロジェクトの既存パターンと一貫性があるか
+
+        設計の問題点や改善提案があれば具体的に指摘してください。
+
+  auto_review:
+    enabled: true
+    drafts: true
+    base_branches:
+      - main
+  labeling_instructions: []
+
+  pre_merge_checks:
+    docstrings:
+      mode: "off"
+
+  # Markdownの書式チェックを無効化
+  tools:
+    markdownlint:
+      enabled: false
