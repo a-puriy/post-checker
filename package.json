@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "setup:dify": "git clone --depth 1 https://github.com/langgenius/dify.git dify-local && cp dify-local/docker/.env.example dify-local/docker/.env",
-    "start": "cd dify-local/docker && docker compose up -d && echo '\n✅ Dify started: http://localhost/apps\n'",
+    "start": "cd dify-local/docker && docker compose up -d && cd ../.. && tsx scripts/dify-cli.ts setup && echo '\n✅ Dify started: http://localhost/apps\n'",
     "stop": "cd dify-local/docker && docker compose down",
     "restart": "npm run stop && npm run start",
     "logs": "cd dify-local/docker && docker compose logs -f",

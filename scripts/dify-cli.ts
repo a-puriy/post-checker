@@ -3,6 +3,7 @@
 import "dotenv/config";
 import { clearAuthState } from "./src/auth/playwright-auth.js";
 import { exportAllDsl } from "./src/usecase/export-dsl.js";
+import { setupDify } from "./src/usecase/setup-dify.js";
 import { runSync } from "./src/usecase/sync.js";
 
 interface CliConfig {
@@ -101,6 +102,9 @@ async function main(): Promise<void> {
   const command = args[0];
 
   switch (command) {
+    case "setup":
+      await setupDify();
+      break;
     case "sync":
       await syncCommand();
       break;
@@ -119,6 +123,7 @@ async function main(): Promise<void> {
       console.error("Usage: dify-cli <command>");
       console.error("");
       console.error("Commands:");
+      console.error("  setup    Run initial Dify setup (if not already set up)");
       console.error("  sync     Sync local files to Dify Knowledge Base");
       console.error("  export   Export all app DSLs to dify-settings/dsl/");
       console.error("  logout   Clear saved auth session");
