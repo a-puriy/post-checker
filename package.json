@@ -22,6 +22,7 @@
     "format": "biome check --write . && prettier --write 'dify-settings/**/*.yml'",
     "lint": "biome lint .",
     "check": "biome check --write .",
+    "knip": "knip",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
@@ -32,6 +33,7 @@
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.9",
     "dotenv": "^17.2.3",
+    "knip": "^5.82.1",
     "prettier": "^3.8.0",
     "simple-git-hooks": "^2.13.1",
     "tsx": "^4.7.0",

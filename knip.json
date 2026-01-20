@@ -1,0 +1,5 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "project": ["scripts/**/*.ts", "*.ts"],
+  "ignore": ["dify-local/**", "knowledges/**", "dify-settings/**"]
+}
