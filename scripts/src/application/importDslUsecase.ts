@@ -76,14 +76,11 @@ export async function importAllDsl(options: ImportDslOptions): Promise<ImportRes
   // .normalized.yml を優先、なければ通常の .yml を使う
   const normalizedFiles = files.filter((f) => f.endsWith(".normalized.yml"));
   const rawFiles = files.filter(
-    (f) =>
-      (f.endsWith(".yml") || f.endsWith(".yaml")) && !f.endsWith(".normalized.yml"),
+    (f) => (f.endsWith(".yml") || f.endsWith(".yaml")) && !f.endsWith(".normalized.yml"),
   );
 
   // normalized版がある場合はそちらを優先
-  const normalizedBaseNames = new Set(
-    normalizedFiles.map((f) => f.replace(".normalized.yml", "")),
-  );
+  const normalizedBaseNames = new Set(normalizedFiles.map((f) => f.replace(".normalized.yml", "")));
   const filesToImport = [
     ...normalizedFiles,
     ...rawFiles.filter((f) => {
