@@ -34,6 +34,8 @@ async function exportCommand(): Promise<void> {
   const email = process.env.DIFY_EMAIL;
   const password = process.env.DIFY_PASSWORD;
   const outputDir = "dify-settings/dsl";
+  const knowledgeApiUrl = process.env.DIFY_API_URL;
+  const knowledgeApiKey = process.env.DIFY_API_KEY;
 
   console.log("Exporting DSLs from Dify...\n");
 
@@ -44,6 +46,8 @@ async function exportCommand(): Promise<void> {
     password,
     includeSecret: false,
     headless: true,
+    knowledgeApiUrl,
+    knowledgeApiKey,
   });
 
   const success = results.filter((r) => r.success).length;

@@ -2,7 +2,12 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { getAuthWithPlaywright } from "../auth/playwright-auth.js";
+import {
+  type DatasetMapping,
+  replaceDatasetIdsWithPlaceholders,
+} from "../domain/dslTransformer.js";
 import { type ConsoleApp, DifyConsoleClient } from "../infra/difyConsoleClient.js";
+import { DifyKnowledgeClient } from "../infra/difyKnowledgeClient.js";
 
 export interface ExportDslOptions {
   baseUrl: string;
@@ -12,6 +17,10 @@ export interface ExportDslOptions {
   includeSecret?: boolean;
   headless?: boolean;
   appFilter?: (app: ConsoleApp) => boolean;
+  /** Knowledge APIのベースURL（プレースホルダー変換用） */
+  knowledgeApiUrl?: string;
+  /** Knowledge APIのAPIキー（プレースホルダー変換用） */
+  knowledgeApiKey?: string;
 }
 
 export interface ExportResult {
@@ -26,7 +35,16 @@ export interface ExportResult {
  * 全アプリのDSLをエクスポートする
  */
 export async function exportAllDsl(options: ExportDslOptions): Promise<ExportResult[]> {
-  const { baseUrl, outputDir, email, password, includeSecret = false, headless = false } = options;
+  const {
+    baseUrl,
+    outputDir,
+    email,
+    password,
+    includeSecret = false,
+    headless = false,
+    knowledgeApiUrl,
+    knowledgeApiKey,
+  } = options;
 
   // 1. Playwright で認証情報を取得
   const auth = await getAuthWithPlaywright({ baseUrl, email, password, headless });
@@ -44,10 +62,22 @@ export async function exportAllDsl(options: ExportDslOptions): Promise<ExportRes
     console.log(`After filter: ${apps.length} app(s).`);
   }
 
-  // 4. 出力ディレクトリを作成
+  // 4. dataset一覧を取得（プレースホルダー変換用）
+  let datasets: DatasetMapping[] = [];
+  if (knowledgeApiUrl && knowledgeApiKey) {
+    const knowledgeClient = new DifyKnowledgeClient({
+      baseUrl: knowledgeApiUrl,
+      apiKey: knowledgeApiKey,
+    });
+    const datasetList = await knowledgeClient.listDatasets();
+    datasets = datasetList.map((d) => ({ id: d.id, name: d.name }));
+    console.log(`Found ${datasets.length} dataset(s) for placeholder conversion.`);
+  }
+
+  // 5. 出力ディレクトリを作成
   await fs.mkdir(outputDir, { recursive: true });
 
-  // 5. 各アプリのDSLをエクスポート
+  // 6. 各アプリのDSLをエクスポート
   const results: ExportResult[] = [];
 
   for (const app of apps) {
@@ -56,7 +86,20 @@ export async function exportAllDsl(options: ExportDslOptions): Promise<ExportRes
 
     try {
       const dsl = await client.exportDsl(app.id, includeSecret);
+
+      // raw DSLを保存
       await fs.writeFile(filepath, dsl, "utf-8");
+
+      // プレースホルダー変換版を保存（datasets取得済みの場合）
+      if (datasets.length > 0) {
+        const normalizedDsl = replaceDatasetIdsWithPlaceholders(dsl, datasets);
+        const normalizedFilename = `${sanitizeFilename(app.name)}.normalized.yml`;
+        const normalizedFilepath = path.join(outputDir, normalizedFilename);
+        await fs.writeFile(normalizedFilepath, normalizedDsl, "utf-8");
+        console.log(`  Exported: ${app.name} → ${filename}, ${normalizedFilename}`);
+      } else {
+        console.log(`  Exported: ${app.name} → ${filename}`);
+      }
 
       results.push({
         appId: app.id,
@@ -64,8 +107,6 @@ export async function exportAllDsl(options: ExportDslOptions): Promise<ExportRes
         filename,
         success: true,
       });
-
-      console.log(`  Exported: ${app.name} → ${filename}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       results.push({
