@@ -62,7 +62,7 @@ npm run dify:logout
 │   └── dsl/          # エクスポートしたDSLファイル
 ├── docs/             # 設計ドキュメント
 ├── infra/            # インフラ設定
-│   └── terraform/    # Terraform設定
+│   └── terraform/    # Terraform設定 → [デプロイ手順](infra/terraform/README.md)
 ├── knowledges/       # RAG用ナレッジファイル
 │   └── manifesto/    # マニフェスト等
 └── scripts/          # ユーティリティスクリプト

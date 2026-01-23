@@ -1,6 +1,6 @@
 # GCP Project Configuration
-project_id = "your-gcp-project-id"
-region     = "asia-northeast1"
+project_id  = "${TF_VAR_PROJECT_ID}"
+region      = "asia-northeast1"
 environment = "dev"
 
 # Cloud SQL Configuration (minimal for small-scale)
@@ -16,11 +16,11 @@ redis_tier           = "BASIC"
 cloud_run_min_instances = 0
 cloud_run_max_instances = 2
 cloud_run_cpu           = "1"
-cloud_run_memory        = "512Mi"
+cloud_run_memory        = "2Gi"
 
 # Dify Configuration
-dify_version = "0.15.3"
+dify_version = "1.11.4"
 
-# Secrets (use environment variables or terraform.tfvars for these)
-# secret_key    = "your-secret-key-here"
-# init_password = "your-initial-admin-password"
+# Secrets
+secret_key    = "${TF_VAR_SECRET_KEY}"
+init_password = "${TF_VAR_INIT_PASSWORD}"
