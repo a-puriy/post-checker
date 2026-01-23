@@ -10,6 +10,9 @@ infra/terraform/*.tfstate
 infra/terraform/*.tfstate.*
 infra/terraform/*.tfvars
 !infra/terraform/*.tfvars.example
+!infra/terraform/*.tfvars.template
+infra/terraform/.env
+!infra/terraform/.env.example
 infra/terraform/.terraform.lock.hcl
 infra/terraform/.terraform.tfstate.lock.info
 .env

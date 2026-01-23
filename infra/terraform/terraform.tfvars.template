@@ -1,5 +1,5 @@
 # GCP Project Configuration
-project_id  = "your-gcp-project-id"
+project_id  = "${TF_VAR_PROJECT_ID}"
 region      = "asia-northeast1"
 environment = "dev"
 
@@ -21,10 +21,6 @@ cloud_run_memory        = "2Gi"
 # Dify Configuration
 dify_version = "1.11.4"
 
-# Secrets - Use environment variables for these:
-#   export TF_VAR_secret_key="$(openssl rand -hex 32)"
-#   export TF_VAR_init_password="your-admin-password"
-#
-# Or create terraform.tfvars (gitignored) with:
-#   secret_key    = "your-secret-key-here"
-#   init_password = "your-initial-admin-password"
+# Secrets
+secret_key    = "${TF_VAR_SECRET_KEY}"
+init_password = "${TF_VAR_INIT_PASSWORD}"
