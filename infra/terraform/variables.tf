@@ -78,3 +78,12 @@ variable "init_password" {
   type        = string
   sensitive   = true
 }
+
+# =============================================================================
+# Domain Configuration
+# =============================================================================
+
+variable "domain" {
+  description = "Domain for the application (e.g., postchecker.team-mir.ai)"
+  type        = string
+}

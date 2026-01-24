@@ -3,8 +3,13 @@
 # =============================================================================
 
 output "vm_static_ip" {
-  description = "Static IP address for the VM (set this in Vercel Domains)"
+  description = "Static IP address for the VM (internal use)"
   value       = google_compute_address.dify_static_ip.address
+}
+
+output "lb_ip" {
+  description = "Load Balancer IP address (set this in Vercel Domains)"
+  value       = google_compute_global_address.lb_ip.address
 }
 
 output "vm_name" {

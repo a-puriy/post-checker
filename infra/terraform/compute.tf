@@ -10,7 +10,7 @@ resource "google_service_account" "dify_vm" {
 # GCS access for Dify storage
 resource "google_storage_bucket_iam_member" "vm_storage_admin" {
   bucket = google_storage_bucket.dify_storage.name
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.admin"
   member = "serviceAccount:${google_service_account.dify_vm.email}"
 }
 
@@ -62,38 +62,18 @@ resource "google_compute_instance" "dify" {
     scopes = ["cloud-platform"]
   }
 
-  # Install Docker and Docker Compose only
-  metadata_startup_script = <<-EOF
-    #!/bin/bash
-    set -e
-
-    # Skip if already installed
-    if command -v docker &> /dev/null; then
-      echo "Docker already installed"
-      exit 0
-    fi
-
-    # Install Docker
-    apt-get update
-    apt-get install -y ca-certificates curl gnupg
-
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    chmod a+r /etc/apt/keyrings/docker.gpg
-
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-      tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-    apt-get update
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-    # Add default user to docker group
-    usermod -aG docker ubuntu
-
-    echo "Docker installation completed"
-  EOF
+  # Install Docker and setup Dify
+  metadata_startup_script = templatefile("${path.module}/scripts/startup.sh", {
+    dify_version       = var.dify_version
+    db_host            = google_sql_database_instance.main.private_ip_address
+    db_port            = "5432"
+    db_user            = var.db_user
+    db_password        = random_password.db_password.result
+    db_name            = var.db_name
+    storage_bucket     = google_storage_bucket.dify_storage.name
+    secret_key         = var.secret_key
+    init_password      = var.init_password
+  })
 
   depends_on = [
     google_project_service.apis,
