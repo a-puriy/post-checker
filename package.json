@@ -14,6 +14,7 @@
     "dify:export": "tsx scripts/dify-cli.ts export",
     "dify:import": "tsx scripts/dify-cli.ts import",
     "dify:logout": "tsx scripts/dify-cli.ts logout",
+    "fetch:note-articles": "tsx scripts/fetch-note-articles.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "INTEGRATION_TEST=true vitest run",
@@ -32,6 +33,7 @@
     "@biomejs/biome": "^2.3.11",
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.9",
+    "@types/turndown": "^5.0.6",
     "dotenv": "^17.2.3",
     "knip": "^5.82.1",
     "prettier": "^3.8.0",
@@ -42,6 +44,7 @@
   },
   "dependencies": {
     "playwright": "^1.57.0",
+    "turndown": "^7.2.2",
     "yaml": "^2.8.2"
   }
 }
