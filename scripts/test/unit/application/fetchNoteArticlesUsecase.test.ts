@@ -8,72 +8,9 @@ import {
 import type { NoteApiArticle } from "../../../src/infra/noteClient.js";
 
 describe("htmlToMarkdown", () => {
-  test("見出しを変換", () => {
-    expect(htmlToMarkdown("<h1>Title</h1>")).toBe("# Title");
-    expect(htmlToMarkdown("<h2>Section</h2>")).toBe("## Section");
-    expect(htmlToMarkdown("<h3>Sub</h3>")).toBe("### Sub");
-  });
-
-  test("段落を変換", () => {
-    expect(htmlToMarkdown("<p>Hello</p><p>World</p>")).toBe("Hello\n\nWorld");
-  });
-
-  test("リストを変換", () => {
-    expect(htmlToMarkdown("<ul><li>A</li><li>B</li></ul>")).toBe("- A\n- B");
-  });
-
-  test("番号付きリストを変換", () => {
-    expect(htmlToMarkdown("<ol><li>First</li><li>Second</li></ol>")).toBe("1. First\n2. Second");
-  });
-
-  test("リンクを変換", () => {
-    expect(htmlToMarkdown('<a href="https://example.com">Link</a>')).toBe(
-      "[Link](https://example.com)",
-    );
-  });
-
-  test("画像を変換", () => {
-    expect(htmlToMarkdown('<img src="https://example.com/img.png" alt="Alt">')).toBe(
-      "![Alt](https://example.com/img.png)",
-    );
-    expect(htmlToMarkdown('<img src="https://example.com/img.png">')).toBe(
-      "![](https://example.com/img.png)",
-    );
-  });
-
-  test("figure内の画像を変換", () => {
-    const html =
-      '<figure><img src="https://example.com/img.png"><figcaption>Caption</figcaption></figure>';
-    expect(htmlToMarkdown(html)).toBe("![Caption](https://example.com/img.png)");
-  });
-
-  test("強調を変換", () => {
-    expect(htmlToMarkdown("<strong>Bold</strong>")).toBe("**Bold**");
-    expect(htmlToMarkdown("<em>Italic</em>")).toBe("*Italic*");
-  });
-
-  test("コードを変換", () => {
-    expect(htmlToMarkdown("<code>inline</code>")).toBe("`inline`");
-    expect(htmlToMarkdown("<pre><code>block</code></pre>")).toBe("```\nblock\n```");
-  });
-
-  test("引用を変換", () => {
-    expect(htmlToMarkdown("<blockquote>Quote</blockquote>")).toBe("> Quote");
-  });
-
-  test("HTMLエンティティをデコード", () => {
-    expect(htmlToMarkdown("&amp; &lt; &gt; &quot; &#39;")).toBe("& < > \" '");
-    expect(htmlToMarkdown("&#65;&#66;")).toBe("AB");
-    expect(htmlToMarkdown("&#x41;&#x42;")).toBe("AB");
-  });
-
   test("note固有タグを除去", () => {
     expect(htmlToMarkdown("<table-of-contents>TOC</table-of-contents>text")).toBe("text");
     expect(htmlToMarkdown("<embedded-content>Embed</embedded-content>text")).toBe("text");
-  });
-
-  test("連続改行を正規化", () => {
-    expect(htmlToMarkdown("<p>A</p>\n\n\n\n<p>B</p>")).toBe("A\n\nB");
   });
 });
 

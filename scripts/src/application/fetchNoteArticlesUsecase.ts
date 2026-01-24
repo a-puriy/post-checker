@@ -1,7 +1,18 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import TurndownService from "turndown";
 import { stringify as yamlStringify } from "yaml";
 import { fetchArticleDetail, fetchArticleList, type NoteApiArticle } from "../infra/noteClient.js";
+
+// Turndownインスタンス（note.com固有タグを除去）
+const turndown = new TurndownService({
+  headingStyle: "atx",      // # 形式
+  codeBlockStyle: "fenced", // ``` 形式
+});
+turndown.addRule("note-custom-tags", {
+  filter: (node) => ["table-of-contents", "embedded-content"].includes(node.nodeName.toLowerCase()),
+  replacement: () => "",
+});
 
 export interface NoteArticleMeta {
   key: string;
@@ -100,50 +111,5 @@ ${htmlToMarkdown(a.body)}
 }
 
 export function htmlToMarkdown(html: string): string {
-  let t = html;
-  t = t.replace(/<table-of-contents[^>]*>[\s\S]*?<\/table-of-contents>/gi, "");
-  t = t.replace(/<embedded-content[^>]*>[\s\S]*?<\/embedded-content>/gi, "");
-  t = t.replace(/<h([1-4])[^>]*>([\s\S]*?)<\/h\1>/gi, (_, l, c) => `\n${"#".repeat(+l)} ${c}\n`);
-  t = t.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, c) =>
-    c.replace(/<li[^>]*>(?:<p[^>]*>)?([\s\S]*?)(?:<\/p>)?<\/li>/gi, "- $1\n"),
-  );
-  t = t.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, c) => {
-    let i = 0;
-    return c.replace(
-      /<li[^>]*>(?:<p[^>]*>)?([\s\S]*?)(?:<\/p>)?<\/li>/gi,
-      (_, content) => `${++i}. ${content}\n`,
-    );
-  });
-  t = t.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, "$1\n\n");
-  t = t.replace(/<(strong|b)[^>]*>([\s\S]*?)<\/\1>/gi, "**$2**");
-  t = t.replace(/<(em|i)[^>]*>([\s\S]*?)<\/\1>/gi, "*$2*");
-  t = t.replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)");
-  t = t.replace(
-    /<figure[^>]*>[\s\S]*?<img[^>]*src="([^"]*)"[^>]*>[\s\S]*?(?:<figcaption>([\s\S]*?)<\/figcaption>)?[\s\S]*?<\/figure>/gi,
-    (_, s, c) => `\n![${c || ""}](${s})\n`,
-  );
-  t = t.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*>/gi, "![$2]($1)");
-  t = t.replace(/<img[^>]*src="([^"]*)"[^>]*>/gi, "![]($1)");
-  t = t.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, c) =>
-    c
-      .split("\n")
-      .map((l: string) => `> ${l}`)
-      .join("\n"),
-  );
-  t = t.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi, "\n```\n$1\n```\n");
-  t = t.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, "`$1`");
-  t = t.replace(/<br\s*\/?>/gi, "\n");
-  t = t.replace(/<[^>]+>/g, "");
-  for (const [e, c] of Object.entries({
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&quot;": '"',
-    "&#39;": "'",
-    "&nbsp;": " ",
-  }))
-    t = t.replace(new RegExp(e, "g"), c);
-  t = t.replace(/&#(\d+);/g, (_, c) => String.fromCharCode(+c));
-  t = t.replace(/&#x([0-9a-fA-F]+);/g, (_, c) => String.fromCharCode(parseInt(c, 16)));
-  return t.replace(/\n{3,}/g, "\n\n").trim();
+  return turndown.turndown(html);
 }
