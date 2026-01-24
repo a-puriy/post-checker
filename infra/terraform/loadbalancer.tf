@@ -16,15 +16,14 @@ resource "google_compute_managed_ssl_certificate" "default" {
   }
 }
 
-# Health check
+# Health check (TCP because Dify returns 307 redirect on /)
 resource "google_compute_health_check" "default" {
   name               = "${local.name_prefix}-health-${local.name_suffix}"
   check_interval_sec = 10
   timeout_sec        = 5
 
-  http_health_check {
-    port         = 80
-    request_path = "/"
+  tcp_health_check {
+    port = 80
   }
 }
 
