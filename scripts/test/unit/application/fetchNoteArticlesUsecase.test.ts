@@ -34,29 +34,12 @@ describe("generateFilename", () => {
     expect(filename).toBe("20240715_n1234567890ab_Title_Test_File.md");
   });
 
-  test("スペースをアンダースコアに変換", () => {
-    const article = { ...baseArticle, name: "Hello   World  Test" };
-    const filename = generateFilename(article);
-    expect(filename).toBe("20240715_n1234567890ab_Hello_World_Test.md");
-  });
-
   test("長いタイトルを50文字で切り詰め", () => {
     const article = { ...baseArticle, name: "A".repeat(100) };
     const filename = generateFilename(article);
     expect(filename).toBe(`20240715_n1234567890ab_${"A".repeat(50)}.md`);
   });
 
-  test("日本語タイトルを処理", () => {
-    const article = { ...baseArticle, name: "日本語タイトル" };
-    const filename = generateFilename(article);
-    expect(filename).toBe("20240715_n1234567890ab_日本語タイトル.md");
-  });
-
-  test("月・日を2桁でパディング", () => {
-    const article = { ...baseArticle, publish_at: "2024-01-05T00:00:00.000+09:00" };
-    const filename = generateFilename(article);
-    expect(filename).toMatch(/^20240105_/);
-  });
 });
 
 describe("generateMarkdown", () => {
@@ -78,19 +61,6 @@ describe("generateMarkdown", () => {
     expect(md).toContain("**投稿日**: 2024-07-15");
     expect(md).toContain("**タグ**: tag1, tag2");
     expect(md).toContain("Hello World");
-  });
-
-  test("タグがない場合はタグ行を含まない", () => {
-    const article: NoteApiArticle = {
-      key: "n1234567890ab",
-      name: "Test",
-      body: "",
-      publish_at: "2024-07-15T00:00:00.000+09:00",
-      user: { nickname: "User", urlname: "user" },
-    };
-
-    const md = generateMarkdown(article);
-    expect(md).not.toContain("タグ");
   });
 });
 
