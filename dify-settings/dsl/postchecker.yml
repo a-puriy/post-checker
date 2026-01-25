@@ -11,6 +11,11 @@ dependencies:
   value:
     marketplace_plugin_unique_identifier: langgenius/ollama:0.1.2@fcf107badccaf57948634ad2c557d393c3894138d83f4eb3f959e9a1d3a86512
     version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openrouter:0.0.30@5b8912ffd2b9b26fe5e12e1dd9891f9a8626b2309b0a88e1f5420b6b359cdfc7
+    version: null
 kind: app
 version: 0.5.0
 workflow:
@@ -131,6 +136,7 @@ workflow:
         sourceType: knowledge-retrieval
         targetType: llm
       id: 1769255439748-source-1769255589411-target
+      selected: false
       source: '1769255439748'
       sourceHandle: source
       target: '1769255589411'
@@ -177,6 +183,7 @@ workflow:
         sourceType: llm
         targetType: template-transform
       id: 1769255589411-source-1769256163730-target
+      selected: false
       source: '1769255589411'
       sourceHandle: source
       target: '1769256163730'
@@ -259,6 +266,7 @@ workflow:
         sourceType: llm
         targetType: llm
       id: 1769255589411-source-1769264824818-target
+      selected: false
       source: '1769255589411'
       sourceHandle: source
       target: '1769264824818'
@@ -276,6 +284,29 @@ workflow:
       targetHandle: target
       type: custom
       zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 1769251549581-source-1769337089985-target
+      source: '1769251549581'
+      sourceHandle: source
+      target: '1769337089985'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1769337089985-source-1769253839816-target
+      source: '1769337089985'
+      sourceHandle: source
+      target: '1769253839816'
+      targetHandle: target
+      type: custom
+      zIndex: 0
     nodes:
     - data:
         selected: false
@@ -285,7 +316,7 @@ workflow:
         - default: ''
           hint: ''
           label: 入力テキスト
-          max_length: 2000
+          max_length: 30000
           options: []
           placeholder: ''
           required: true
@@ -294,11 +325,11 @@ workflow:
       height: 107
       id: '1769251549581'
       position:
-        x: 80
-        y: 282
+        x: -47.33405484449628
+        y: 276.2771211305844
       positionAbsolute:
-        x: 80
-        y: 282
+        x: -47.33405484449628
+        y: 276.2771211305844
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -351,17 +382,17 @@ workflow:
           completion_params:
             temperature: 0.7
           mode: chat
-          name: qwen2.5:32b
-          provider: langgenius/ollama/ollama
+          name: openai/gpt-4o-mini
+          provider: langgenius/openrouter/openrouter
         prompt_template:
         - id: 82d5a314-ded9-46eb-9fb9-8be3cd1398fc
           role: system
           text: "あなたは選挙コンプライアンスの専門家である弁護士です。 \nユーザーから入力された「発信予定のテキスト」に対し、以下の「参照法令（公職選挙法）」に基づいて適法性を厳格に審査してください。\
-            \ \n\n## 参照法令\n {{#context#}}\n\n## 審査基準 \n1. 事前運動の禁止（投票依頼とみなされる表現はないか）\
-            \ \n2. 虚偽事項の公表（事実と異なる経歴や実績の示唆） \n3. 利害誘導・買収の示唆 \n4. 未成年者の選挙運動など、主体に関する制限\
-            \ \n\n## 出力形式\n### \U0001F3DB️ 1. 公職選挙法チェック\n - **判定:** リスクの有無について言及\n\
-            \ - **根拠条文:** 抵触する可能性のある条文があれば引用\n - **アドバイス:** 修正が必要な場合の具体的な言い換え案 \n\n\
-            ## ユーザー入力テキスト\n {{#1769251549581.query#}}"
+            \ \n\n## 参照法令\n {{#context#}}\n\n## \U0001F4C5 現在の日付と法的ステータス\n{{#1769337089985.status_message#}}\n\
+            \n## 審査基準 \n1. 事前運動の禁止（投票依頼とみなされる表現はないか） \n2. 虚偽事項の公表（事実と異なる経歴や実績の示唆）\
+            \ \n3. 利害誘導・買収の示唆 \n4. 未成年者の選挙運動など、主体に関する制限 \n\n## 出力形式\n### \U0001F3DB\
+            ️ 1. 公職選挙法チェック\n - **判定:** 【\U0001F525高リスク/ ⚠️中リスク/ ✅低リスク】 \n - **判断根拠:**\
+            \ 判断理由をわかりやすく説明\n\n## ユーザー入力テキスト\n {{#1769251549581.query#}}"
         selected: false
         title: 公職選挙法チェック
         type: llm
@@ -426,15 +457,15 @@ workflow:
           completion_params:
             temperature: 0.7
           mode: chat
-          name: qwen2.5:32b
-          provider: langgenius/ollama/ollama
+          name: openai/gpt-4o-mini
+          provider: langgenius/openrouter/openrouter
         prompt_template:
         - id: a99b246f-8d64-43e4-b6be-44d94ff1ffcd
           role: system
           text: "あなたは「チームみらい」の政策秘書です。 \nユーザーの入力テキストが、党の掲げるマニフェストや過去の実績と整合しているか厳しくチェックしてください。\
             \ \n\n## 参照情報（政策・実績）\n {{#context#}} \n\n## チェック項目 \n1. 政策との矛盾: 党の方針と逆のことを言っていないか\
             \ \n2. 実績の正確性: 過去の実績を過大・過小に表現していないか \n\n## 出力形式（Markdown） \n### \U0001F4D8\
-            \ 2. 政策・実績チェック\n - **判定:** 【整合 / 矛盾あり / 要注意】 \n - **分析:** （矛盾点や補強すべき実績があれば具体的に記述）\n\
+            \ 2. 政策マニフェストとの矛盾チェック\n - **判定:** 【✅整合 / ⚠️矛盾あり】 \n - **分析:** （矛盾点や補強すべき実績があれば具体的に記述）\n\
             \n## ユーザー入力テキスト\n{{#1769251549581.query#}}\n"
         selected: false
         title: 政策ビジョンの整合性チェック
@@ -500,15 +531,15 @@ workflow:
           completion_params:
             temperature: 0.7
           mode: chat
-          name: qwen2.5:32b
-          provider: langgenius/ollama/ollama
+          name: openai/gpt-4o-mini
+          provider: langgenius/openrouter/openrouter
         prompt_template:
         - id: 29501d9a-fc7b-48e2-bfd4-d0f3532ce826
           role: system
           text: "あなたはチームの広報アーカイブ担当です。\nユーザーの入力テキストが、過去のNote記事や公式発言と矛盾していないか、あるいは再利用できる過去の良い表現がないか確認してください。\
             \ \n\n## 参照情報（過去の公式発言・Note）\n {{#context#}} \n\n## チェック項目 \n1. 一貫性: 過去に言ったことと矛盾していないか\
             \ \n2. 文脈: 過去の文脈を無視した発信になっていないか \n\n## 出力形式（Markdown） \n### \U0001F5E3\
-            ️ 3. 過去発言（Note等）チェック \n- **判定:** 【整合 / 矛盾あり / 要注意】\n- **参照:** （関連する過去記事や発言があればタイトル等を引用）\
+            ️ 3. 公式noteとの矛盾チェック \n- **判定:** 【✅整合 / ⚠️矛盾あり】\n- **参照:** （関連する過去記事や発言があればタイトル等を引用）\
             \ \n- **コメント:** （過去の文脈との整合性について）\n\n## ユーザー入力テキスト\n{{#1769251549581.query#}}\n"
         selected: false
         title: 公式発言との一致確認
@@ -538,8 +569,8 @@ workflow:
           completion_params:
             temperature: 0.7
           mode: chat
-          name: qwen2.5:32b
-          provider: langgenius/ollama/ollama
+          name: openai/gpt-4o-mini
+          provider: langgenius/openrouter/openrouter
         prompt_template:
         - id: 71e226f3-3e54-4e27-8ce4-32b1a98392bf
           role: system
@@ -568,7 +599,9 @@ workflow:
 
             ### 🔥 4. 炎上・レピュテーションリスク
 
-            - **リスク要因:** （炎上の火種になりそうな箇所）
+            - **判定:** 【🔥高リスク/ ⚠️中リスク/ ✅低リスク】
+
+            - **リスク要因:** （明確に炎上の火種になりそうな箇所）
 
 
             '
@@ -592,12 +625,7 @@ workflow:
       width: 241
     - data:
         selected: false
-        template: '**対象テキスト:**
-
-          {{ query }}
-
-
-          ---
+        template: '---
 
           {{law}}
 
@@ -665,8 +693,8 @@ workflow:
           completion_params:
             temperature: 0.7
           mode: chat
-          name: qwen2.5:32b
-          provider: langgenius/ollama/ollama
+          name: openai/gpt-5.1
+          provider: langgenius/openrouter/openrouter
         prompt_template:
         - id: 742fbdbf-42cb-411c-a1e7-87934843ca5f
           role: system
@@ -675,8 +703,9 @@ workflow:
             \n## 参照する専門家レポート\n### 公職選挙法チェック\n{{#1769253839816.text#}}\n### 政策ビジョンの整合性チェック\n\
             {{#1769255396970.text#}}\n### 公式発言との一致確認\n{{#1769255589411.text#}}\n###\
             \ 炎上リスク判定\n{{#1769255623283.text#}}\n\n## あなたのタスク \n専門家の意見をそのままコピペするのではなく、以下の構成で分かりやすく伝えてください。\
-            \ \n\n**重要な指摘事項（要約）** \n- 専門家レポートの中で、特に致命的なリスク（公選法違反や炎上リスク）があれば簡潔に指摘。\
-            \ \n- 些末な指摘は無視して、重要なポイントのみに絞る。 \n\n"
+            \ \n\n## 出力形式（Markdown）\n### 重要な指摘事項（要約）\n- **総合判定:** 【\U0001F525重大な懸念あり/\
+            \ ⚠️注意/ ✅低リスク】\n- 専門家レポートの中で、特に致命的なリスク（公選法違反や炎上リスク）があれば簡潔に指摘。 \n- 些末な指摘は無視して、重要なポイントのみに絞る。\
+            \ \n\n"
         selected: false
         title: 総括
         type: llm
@@ -699,14 +728,16 @@ workflow:
         selected: false
         template: '# 🗳️ ファクトチェック＆リスク判定
 
+          ---
 
           ## 総括
+
+          ---
 
           {{ summary }}
 
 
           ---
-
 
           ## 詳細レポート
 
@@ -768,8 +799,52 @@ workflow:
       targetPosition: left
       type: custom
       width: 241
+    - data:
+        code: "\nfrom datetime import datetime, timedelta, timezone\n\ndef main():\n\
+          \    # 1. 日本時間 (JST) で現在日時を取得\n    JST = timezone(timedelta(hours=9))\n\
+          \    now = datetime.now(JST)\n    today = now.date()\n    \n    # ==========================================\n\
+          \    # ★ここに「公示日」を設定してください (年, 月, 日)\n    ANNOUNCEMENT_DATE = datetime(2026,\
+          \ 1, 27, tzinfo=JST).date()\n    # ==========================================\n\
+          \n    # 3. 日付比較ロジック\n    diff = (ANNOUNCEMENT_DATE - today).days\n    \n\
+          \    if diff > 0:\n        # 公示日前（事前運動期間）\n        period_type = \"PRE_ELECTION\"\
+          \n        alert_text = f\"【厳重注意】本日は「{today}」です。公示日（{ANNOUNCEMENT_DATE}）の前であるため、「事前運動」の禁止規定が適用されます。投票依頼とみなされる行為は違法です。\"\
+          \n    elif diff == 0:\n        # 公示日当日\n        period_type = \"ELECTION_START_DAY\"\
+          \n        alert_text = f\"本日は「{today}」です。公示日当日です。立候補届出が完了するまでは選挙運動はできません。\"\
+          \n    else:\n        # 選挙期間中（公示日以降）\n        period_type = \"ELECTION_PERIOD\"\
+          \n        alert_text = f\"本日は「{today}」です。選挙期間中です（または終了）。定められた方法での選挙運動が可能です。\"\
+          \n\n    # 4. 結果を返す\n    return {\n        \"today\": str(today),\n     \
+          \   \"announcement_date\": str(ANNOUNCEMENT_DATE),\n        \"status_message\"\
+          : alert_text\n    }\n"
+        code_language: python3
+        outputs:
+          announcement_date:
+            children: null
+            type: string
+          status_message:
+            children: null
+            type: string
+          today:
+            children: null
+            type: string
+        selected: false
+        title: 当日日付と公示日の比較
+        type: code
+        variables: []
+      height: 50
+      id: '1769337089985'
+      position:
+        x: 382
+        y: 203.52629136577883
+      positionAbsolute:
+        x: 382
+        y: 203.52629136577883
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
     viewport:
-      x: -1315.0401575747173
-      y: 220.67872933677535
-      zoom: 1.1392358545721186
+      x: 103.4250678654536
+      y: 207.74212915660598
+      zoom: 0.6989489191142869
   rag_pipeline_variables: []
